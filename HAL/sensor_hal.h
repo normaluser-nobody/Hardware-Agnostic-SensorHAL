@@ -3,24 +3,27 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-
-// Moved "Type" to metadata. The packet shouldn't carry this overhead.
 typedef enum {
     SENSOR_TYPE_SCALAR,
     SENSOR_TYPE_VEC2,
     SENSOR_TYPE_VEC3,
 } SensorDataType;
 
-
-typedef union {
+typedef struct {
     float scalar;
-    struct { float x, y; } vec2;
-    struct { float x, y, z; } vec3;
-} SensorDataUnion;
+} SensorDataScaler;
+
+typedef struct {
+    float x, y;
+} SensorDataVec2;
+
+typedef struct {
+    float x, y, z;
+} SensorDataVec3;
 
 typedef struct {
     uint64_t timestamp_us;
-    SensorDataUnion data;
+    void *sensor_data;
 } SensorDevicePacket;
 
 typedef enum {

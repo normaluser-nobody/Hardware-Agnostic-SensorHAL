@@ -23,6 +23,7 @@
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
 #include "sensor_api.h"
+#include "sensor_hal.h"
 #include "i2c_hal.h"
 #define NUM_SENSORS 2
 /* USER CODE END Includes */
@@ -57,8 +58,8 @@ static void MX_I2C1_Init(void);
 static void MX_USART1_UART_Init(void);
 /* USER CODE BEGIN PFP */
 extern i2c_bus_t stm32_create_i2c_bus(I2C_HandleTypeDef *hardware_handle);  
-extern void tmp108_set(SensorObject *self, i2c_bus_t *bus, uint8_t device_address);  //here we add our particular sensor
-extern void adxl345_set(SensorObject *self, i2c_bus_t *bus, uint8_t device_address);  
+extern void tmp108_set(SensorObject *self, i2c_bus_t *bus, uint8_t device_address,void *data_buffer);  //here we add our particular sensor
+extern void adxl345_set(SensorObject *self, i2c_bus_t *bus, uint8_t device_address,void *data_buffer);  
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -105,9 +106,10 @@ int main(void)
 
   // --- 2. Sensor Instantiation ---
   SensorObject sensor_array[NUM_SENSORS];
-
-  tmp108_set(&sensor_array[0], &primary_i2c_bus, 0x48);
-  adxl345_set(&sensor_array[1], &primary_i2c_bus, 0x40);
+  SensorDataScaler tmp_data_buffer;
+  SensorDataVec3 adxl_data_buffer;
+  tmp108_set(&sensor_array[0], &primary_i2c_bus, 0x48,&tmp_data_buffer);
+  adxl345_set(&sensor_array[1], &primary_i2c_bus, 0x40,&adxl_data_buffer);
   
   /* USER CODE END 2 */
 

@@ -20,20 +20,23 @@ uint8_t os_sensor_read(SensorObject *self) {
         sensor_status_t status = self->vtable->read(&self->sensor_meta, &self->sensor_packet);
         
         if (status == SENSOR_OK) {
-            // Check type and print accordingly
             if (self->sensor_meta.type == SENSOR_TYPE_SCALAR) {
+                
+                SensorDataScaler *self_data = (SensorDataScaler *)self->sensor_packet.sensor_data;
                 printf("[Addr: 0x%02X] Scalar Value: %.3f\n", 
                         self->sensor_meta.device_address, 
-                        self->sensor_packet.data.scalar);
+                        self_data->scalar);
             }
             else if (self->sensor_meta.type == SENSOR_TYPE_VEC3) {
+
+                SensorDataVec3 *self_data = (SensorDataVec3 *)self->sensor_packet.sensor_data;
                 printf("[Addr: 0x%02X] Vec3 X: %.2f, Y: %.2f, Z: %.2f\n", 
                         self->sensor_meta.device_address,
-                        self->sensor_packet.data.vec3.x, 
-                        self->sensor_packet.data.vec3.y, 
-                        self->sensor_packet.data.vec3.z);
+                        self_data->x, 
+                        self_data->y, 
+                        self_data->z);
             }
-            return 1; // Moved OUTSIDE the type-check blocks so it returns 1 for both!
+            return 1;
         }
     }
     return 0; 

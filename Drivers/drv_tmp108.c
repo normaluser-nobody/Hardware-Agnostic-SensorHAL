@@ -15,28 +15,27 @@ sensor_status_t tmp108_read(SensorDeviceMeta *self, SensorDevicePacket *out) {
         return SENSOR_FAIL;
     }
 
-    // 1. Join bytes into 16-bit integer
     int16_t raw_combined = (raw_data[0] << 8) | raw_data[1];
 
     
     float temp_c = (float)raw_combined / 256.0f; 
+    SensorDataScaler *self_data = (SensorDataScaler *)out->sensor_data;
 
-    out->data.scalar = temp_c;
+    self_data->scalar = temp_c;
     return SENSOR_OK;
 }
 
 static const SensorVTable TMP108_VTable = {
     .init    = tmp108_init,
     .read    = tmp108_read,
-    .trigger = NULL, // TMP108 doesn't need a trigger
-    .sleep   = NULL  // Or add a sleep function if you want!
+    .trigger = NULL,
+    .sleep   = NULL 
 };
-
-void tmp108_set(SensorObject *self, i2c_bus_t *bus, uint8_t device_address) {
+void tmp108_set(SensorObject *self, i2c_bus_t *bus, uint8_t device_address, void *data_buffer) {
     self->sensor_meta.device_address = device_address;
     self->sensor_meta.type = SENSOR_TYPE_SCALAR;
     self->sensor_meta.io_interface = bus; 
-
-    self->sensor_meta.channel = 0;                   
+    self->sensor_meta.io_interface = bus; 
+    self->sensor_packet.sensor_data = data_buffer;                   
     self->vtable=&TMP108_VTable;
 }
